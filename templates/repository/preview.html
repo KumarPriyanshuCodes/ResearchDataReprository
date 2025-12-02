@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold mb-3">Dataset Preview</h1>
+            <p class="lead mb-0">Review your dataset details and sample data below.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="feature-icon mx-auto mx-md-0">
+                <i class="bi bi-table"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #preview-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    #preview-table thead {
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        color: white;
+    }
+    
+    #preview-table th {
+        font-weight: 600;
+        padding: 12px 15px;
+        border: none;
+    }
+    
+    #preview-table td {
+        padding: 10px 15px;
+        vertical-align: middle;
+    }
+    
+    #preview-table tbody tr:nth-child(even) {
+        background-color: rgba(37, 99, 235, 0.03);
+    }
+    
+    #preview-table tbody tr:hover {
+        background-color: rgba(37, 99, 235, 0.08);
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2 class="card-title">{{ dataset.title }}</h2>
+                        <h5 class="card-subtitle mb-3 text-muted">by {{ dataset.author }}</h5>
+                    </div>
+                    <span class="badge bg-primary fs-6">{{ dataset.doi }}</span>
+                </div>
+                
+                <p class="card-text">{{ dataset.description }}</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">Upload Date</div>
+                            <div class="fw-medium">{{ dataset.upload_date|date:"F d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">File Size</div>
+                            <div class="fw-medium">{{ dataset.file_size|filesizeformat }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">File Type</div>
+                            <div class="fw-medium">{{ dataset.file_type|upper }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">Rows</div>
+                            <div class="fw-medium">{{ preview_data|length }}+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="card-title mb-0"><i class="bi bi-table text-primary me-2"></i>Data Preview</h3>
+                    <div>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Repository
+                        </a>
+                        <a href="{{ dataset.file.url }}" class="btn btn-primary" download>
+                            <i class="bi bi-download me-1"></i>Download Full Dataset
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    {{ preview_data|safe }}
+                </div>
+                
+                <div class="alert alert-info mt-4 mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    This preview shows the first 10 rows of your dataset. Download the full file to access all data.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
