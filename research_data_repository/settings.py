@@ -25,11 +25,7 @@ SECRET_KEY = 'django-insecure-r81_7f!up&j_yrs+@4oas-4k9-l0g7wb3!c6#2)qj-cz899o=4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'researchdatarepository-1.onrender.com',
-    'localhost',
-    '127.0.0.1'
-]
+ALLOWED_HOSTS = ["*"]
 
 
 
