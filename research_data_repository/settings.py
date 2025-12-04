@@ -26,10 +26,11 @@ SECRET_KEY = 'django-insecure-r81_7f!up&j_yrs+@4oas-4k9-l0g7wb3!c6#2)qj-cz899o=4
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "researchdatarepository.onrender.com",
-    "localhost",
-    "127.0.0.1"
+    'localhost',
+    '127.0.0.1',
+    'researchdatarepository.onrender.com',   # <-- your render domain
 ]
+
 
 
 
@@ -134,3 +135,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
+
+import os
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
