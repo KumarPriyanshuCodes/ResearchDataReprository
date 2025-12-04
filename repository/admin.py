@@ -23,7 +23,7 @@ class DatasetAdmin(admin.ModelAdmin):
     )
     
     def get_readonly_fields(self, request, obj=None):
-        # Make DOI readonly only for existing objects
+        
         if obj:
             return self.readonly_fields + ('file_size',)
         return self.readonly_fields

@@ -23,7 +23,7 @@ def home(request):
 
 @login_required
 def upload_dataset(request):
-    """Handle dataset upload"""
+    """Handle dataset upload""" 
     if request.method == 'POST':
         # Get form data
         title = request.POST.get('title')
@@ -124,7 +124,7 @@ def search_datasets(request):
         )
     
     # Pagination
-    paginator = Paginator(datasets_list, 10)  # Show 10 datasets per page
+    paginator = Paginator(datasets_list, 10)  
     page_number = request.GET.get('page')
     datasets = paginator.get_page(page_number)
     
