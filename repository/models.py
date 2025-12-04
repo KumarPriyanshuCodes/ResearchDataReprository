@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from datetime import datetime
+import os
 
 class Dataset(models.Model):
     # Generate a unique ID for the dataset
@@ -14,7 +15,7 @@ class Dataset(models.Model):
     # File information
     file = models.FileField(upload_to='datasets/')
     file_size = models.PositiveIntegerField()
-    file_type = models.CharField(max_length=10)  # csv, xlsx
+    file_type = models.CharField(max_length=10)  # csv, xlsx, pdf, doc, docx
     
     # Mock DOI - automatically generated
     doi = models.CharField(max_length=100, unique=True, editable=False)
@@ -31,6 +32,11 @@ class Dataset(models.Model):
             random_suffix = uuid.uuid4().hex[:8].upper()
             self.doi = f"10.{date_str}/{random_suffix}"
         
+        # Set file type if not already set
+        if not self.file_type and self.file:
+            _, ext = os.path.splitext(self.file.name)
+            self.file_type = ext.lower().replace('.', '')
+        
         super().save(*args, **kwargs)
     
     def __str__(self):
@@ -38,3 +44,5 @@ class Dataset(models.Model):
     
     class Meta:
         ordering = ['-upload_date']
+        verbose_name = "Dataset"
+        verbose_name_plural = "Datasets"

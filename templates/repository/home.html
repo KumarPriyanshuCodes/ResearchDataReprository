@@ -15,22 +15,33 @@
     </div>
 </div>
 
+{% if not user.is_authenticated %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="card-title"><i class="bi bi-lock text-primary me-2"></i>Authentication Required</h3>
+                <p class="card-text">You need to be logged in to upload datasets, preview data, or download files.</p>
+                <div class="mt-3">
+                    <a href="{% url 'login' %}" class="btn btn-primary me-2">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
 <div class="row mb-4">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="stat-card">
             <i class="bi bi-file-earmark-bar-graph text-primary fs-1"></i>
-            <div class="stat-number">{{ datasets.count }}</div>
+            <div class="stat-number">{{ datasets.paginator.count }}</div>
             <div class="text-muted">Datasets Stored</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="stat-card">
-            <i class="bi bi-person-badge text-primary fs-1"></i>
-            <div class="stat-number">10+</div>
-            <div class="text-muted">Researchers</div>
-        </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="stat-card">
             <i class="bi bi-shield-check text-primary fs-1"></i>
             <div class="stat-number">100%</div>
@@ -38,8 +49,10 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <div class="row">
+    {% if user.is_authenticated %}
     <div class="col-lg-6 mb-4">
         <div class="card h-100">
             <div class="card-body">
@@ -60,8 +73,8 @@
                     </div>
                     <div class="mb-4">
                         <label for="file" class="form-label fw-medium">Dataset File</label>
-                        <input type="file" class="form-control" id="file" name="file" accept=".csv,.xlsx" required>
-                        <div class="form-text">Supported formats: CSV, XLSX (Max size: 5MB)</div>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv,.xlsx,.pdf,.doc,.docx" required>
+                        <div class="form-text">Supported formats: CSV, XLSX, PDF, DOC, DOCX (Max size: 500MB)</div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-cloud-arrow-up me-2"></i>Upload Dataset
@@ -70,13 +83,14 @@
             </div>
         </div>
     </div>
+    {% endif %}
     
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="card-title mb-0"><i class="bi bi-search text-primary me-2"></i>Dataset Repository</h3>
-                    <span class="badge bg-primary">{{ datasets.count }} datasets</span>
+                    <span class="badge bg-primary">{{ datasets.paginator.count }} datasets</span>
                 </div>
                 
                 <form method="get" action="{% url 'search_datasets' %}" class="mb-4">
@@ -107,14 +121,52 @@
                                     <td><span class="badge bg-light text-dark">{{ dataset.doi }}</span></td>
                                     <td>{{ dataset.upload_date|date:"M d, Y" }}</td>
                                     <td class="text-center">
-                                        <a href="{% url 'dataset_preview' dataset.id %}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{% url 'dataset_preview' dataset.id %}" class="btn btn-sm btn-outline-primary me-1">
                                             <i class="bi bi-eye"></i> Preview
+                                        </a>
+                                        <a href="{% url 'download_dataset' dataset.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-download"></i>
                                         </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        
+                        <!-- Pagination -->
+                        {% if datasets.has_other_pages %}
+                        <nav aria-label="Dataset pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if datasets.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ datasets.previous_page_number }}{% if search_query %}&query={{ search_query }}{% endif %}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for num in datasets.paginator.page_range %}
+                                    {% if datasets.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > datasets.number|add:'-3' and num < datasets.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% if search_query %}&query={{ search_query }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if datasets.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ datasets.next_page_number }}{% if search_query %}&query={{ search_query }}{% endif %}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
                     {% else %}
                         <div class="text-center py-5">
                             <i class="bi bi-database-x text-muted fs-1"></i>
@@ -139,7 +191,7 @@
                             <i class="bi bi-upload"></i>
                         </div>
                         <h5>Upload</h5>
-                        <p class="text-muted small">Upload your research data in CSV or XLSX format</p>
+                        <p class="text-muted small">Upload your research data in CSV, XLSX, PDF, DOC, or DOCX format</p>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="feature-icon mx-auto">

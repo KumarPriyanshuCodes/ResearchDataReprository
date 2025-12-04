@@ -82,12 +82,14 @@
                             <div class="fw-medium">{{ dataset.file_type|upper }}</div>
                         </div>
                     </div>
+                    {% if preview_data %}
                     <div class="col-md-3 mb-3">
                         <div class="border rounded p-3 h-100">
                             <div class="text-muted small">Rows</div>
                             <div class="fw-medium">{{ preview_data|length }}+</div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -95,25 +97,47 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="card-title mb-0"><i class="bi bi-table text-primary me-2"></i>Data Preview</h3>
+                    <h3 class="card-title mb-0">
+                        {% if preview_data %}
+                            <i class="bi bi-table text-primary me-2"></i>Data Preview
+                        {% else %}
+                            <i class="bi bi-file-text text-primary me-2"></i>File Information
+                        {% endif %}
+                    </h3>
                     <div>
                         <a href="{% url 'home' %}" class="btn btn-outline-primary me-2">
                             <i class="bi bi-arrow-left me-1"></i>Back to Repository
                         </a>
-                        <a href="{{ dataset.file.url }}" class="btn btn-primary" download>
-                            <i class="bi bi-download me-1"></i>Download Full Dataset
+                        <a href="{% url 'download_dataset' dataset.id %}" class="btn btn-success">
+                            <i class="bi bi-download me-1"></i>Download File
                         </a>
                     </div>
                 </div>
                 
-                <div class="table-responsive">
-                    {{ preview_data|safe }}
-                </div>
-                
-                <div class="alert alert-info mt-4 mb-0">
-                    <i class="bi bi-info-circle me-2"></i>
-                    This preview shows the first 10 rows of your dataset. Download the full file to access all data.
-                </div>
+                {% if preview_data %}
+                    <div class="table-responsive">
+                        {{ preview_data|safe }}
+                    </div>
+                    
+                    <div class="alert alert-info mt-4 mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        This preview shows the first 10 rows of your dataset. Download the full file to access all data.
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-file-earmark-text text-muted fs-1"></i>
+                        <h5 class="mt-3">File Information</h5>
+                        <p class="text-muted">
+                            This file is of type <strong>{{ dataset.file_type|upper }}</strong> and cannot be previewed directly in the browser.
+                            You can download it using the button above to view its contents.
+                        </p>
+                        <div class="mt-4">
+                            <a href="{% url 'download_dataset' dataset.id %}" class="btn btn-success btn-lg">
+                                <i class="bi bi-download me-1"></i>Download {{ dataset.file_type|upper }} File
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
